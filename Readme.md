@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Герман Дольников](https://up.htmlacademy.ru/javascript/20/user/831175).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Суглубов](https://htmlacademy.ru/profile/id1133747).
 
 ---
 
