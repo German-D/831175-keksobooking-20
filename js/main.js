@@ -8,13 +8,13 @@ var getRandomNumber = function (min, max) {
   return Math.floor(randomNumber);
 };
 
-var getArrayLength = function (min, aray) {
+var getRandomArrayLength = function (min, aray) {
   return getRandomNumber(min, aray.length - 1);
 };
 
 var getNewArrayRandomLength = function (array) {
   var newArray = [];
-  var newArrayLength = getArrayLength(1, array);
+  var newArrayLength = getRandomArrayLength(1, array);
 
   for (var n = 0; n < newArrayLength; n++) {
     newArray.push(array[n]);
