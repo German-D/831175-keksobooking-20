@@ -48,15 +48,16 @@ var allHotels = [];
 for (var i = 0; i < 8; i++) {
   var locationX = getRandomNumber(1, 500);
   var locationY = getRandomNumber(130, 630);
+  var iNext = i + 1;
 
   allHotels.push(
       {
         author: {
-          avatar: 'img/avatars/user' + '0' + i++ + '.png'
+          avatar: 'img/avatars/user' + '0' + iNext + '.png'
         },
         offer: {
           title: 'Это тайтл',
-          address: 'locationX' + ', ' + 'locationY',
+          address: locationX + ',' + locationY,
           price: 1000,
           type: types[i],
           rooms: 3,
@@ -75,7 +76,9 @@ for (var i = 0; i < 8; i++) {
 }
 var mapPins = document.querySelector('.map__pins');
 
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+var pinTemplate = document.querySelector('#pin')
+  .content
+  .querySelector('.map__pin');
 
 var renderHotel = function (hotels, template) {
   var hotelElement = template.cloneNode(true);
@@ -96,3 +99,47 @@ for (var k = 0; k < allHotels.length; k++) {
 
 mapPins.appendChild(fragment);
 
+var getMatchedValue = function (type) {
+  if (type === 'flat') {
+    return 'Квартира';
+  }
+  if (type === 'bungalo') {
+    return 'Бунгало';
+  }
+  if (type === 'house') {
+    return 'Дом';
+  } else {
+    return 'Дворец';
+  }
+};
+
+var cardTemplate = document.querySelector('#card')
+  .content
+  .querySelector('.popup');
+
+var renderMapHotel = function (hotel, template) {
+  var hotelMapElement = template.cloneNode(true);
+
+  hotelMapElement.querySelector('.popup__title').innerHTML = hotel.offer.title;
+  hotelMapElement.querySelector('.popup__text--address').innerHTML = hotel.offer.address;
+  hotelMapElement.querySelector('.popup__text--price').innerHTML = hotel.offer.price + '₽/ночь';
+  hotelMapElement.querySelector('.popup__type').innerHTML = getMatchedValue(hotel.offer.type);
+  hotelMapElement.querySelector('.popup__text--capacity')
+    .innerHTML = allHotels[0].offer.rooms + ' комнаты для ' + hotel.offer.guests + ' гостей';
+  hotelMapElement.querySelector('.popup__text--time')
+    .innerHTML = 'Заезд после ' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
+  hotelMapElement.querySelector('.popup__features').innerHTML = hotel.offer.features;
+  hotelMapElement.querySelector('.popup__description').innerHTML = hotel.offer.description;
+  hotelMapElement.querySelector('.popup__photos')
+    .querySelector('.popup__photo').src = hotel.offer.photos[0];
+  hotelMapElement.querySelector('.popup__avatar').src = hotel.author.avatar;
+
+  return hotelMapElement;
+};
+
+var mapBlock = document.querySelector('.map');
+var fragmentMap = document.createDocumentFragment();
+var newMapHotel = renderMapHotel(allHotels[0], cardTemplate);
+fragmentMap.appendChild(newMapHotel);
+
+mapBlock.appendChild(fragmentMap);
