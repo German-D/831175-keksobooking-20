@@ -50,29 +50,28 @@ for (var i = 0; i < 8; i++) {
   var locationY = getRandomNumber(130, 630);
   var iNext = i + 1;
 
-  allHotels.push(
-      {
-        author: {
-          avatar: 'img/avatars/user' + '0' + iNext + '.png'
-        },
-        offer: {
-          title: 'Это тайтл',
-          address: locationX + ',' + locationY,
-          price: 1000,
-          type: types[i],
-          rooms: 3,
-          guests: 3,
-          checkin: '12:00',
-          checkout: '12:00',
-          features: getNewArrayRandomLength(featuresInHotel),
-          description: 'строка с описанием',
-          photos: getNewArrayRandomLength(hotelPhotos)
-        },
-        location: {
-          x: locationX,
-          y: locationY
-        }
-      });
+  allHotels.push({
+    author: {
+      avatar: 'img/avatars/user' + '0' + iNext + '.png'
+    },
+    offer: {
+      title: 'Это тайтл',
+      address: locationX + ',' + locationY,
+      price: 1000,
+      type: types[i],
+      rooms: 3,
+      guests: 3,
+      checkin: '12:00',
+      checkout: '12:00',
+      features: getNewArrayRandomLength(featuresInHotel),
+      description: 'строка с описанием',
+      photos: getNewArrayRandomLength(hotelPhotos)
+    },
+    location: {
+      x: locationX,
+      y: locationY
+    }
+  });
 }
 var mapPins = document.querySelector('.map__pins');
 
@@ -130,9 +129,22 @@ var renderMapHotel = function (hotel, template) {
     .innerHTML = 'Заезд после ' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
   hotelMapElement.querySelector('.popup__features').innerHTML = hotel.offer.features;
   hotelMapElement.querySelector('.popup__description').innerHTML = hotel.offer.description;
-  hotelMapElement.querySelector('.popup__photos')
-    .querySelector('.popup__photo').src = hotel.offer.photos[0];
   hotelMapElement.querySelector('.popup__avatar').src = hotel.author.avatar;
+
+  var photosLength = hotel.offer.photos.length;
+  var popupPhotos = hotelMapElement.querySelector('.popup__photos');
+  var popupPhoto = hotelMapElement.querySelector('.popup__photos')
+    .querySelector('.popup__photo');
+
+  if (photosLength > 1) {
+    for (var j = 0; j < photosLength; j++) {
+      var popupPhotoTemplate = popupPhoto.cloneNode(true);
+      popupPhotoTemplate.src = hotel.offer.photos[j];
+      popupPhotos.appendChild(popupPhotoTemplate);
+    }
+  } else {
+    popupPhoto.src = hotel.offer.photos[0];
+  }
 
   return hotelMapElement;
 };
