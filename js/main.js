@@ -8,8 +8,6 @@ var getRandomNumber = function (min, max) {
   return Math.floor(randomNumber);
 };
 
-console.log(getRandomNumber(1, 2));
-
 var getRandomArrayLength = function (min, array) {
   return getRandomNumber(min, array.length);
 };
@@ -45,7 +43,6 @@ var hotelPhotos = [];
 for (var y = 1; y < 4; y++) {
   hotelPhotos.push('http://o0.github.io/assets/images/tokyo/hotel' + y + '.jpg');
 }
-console.log(hotelPhotos);
 
 var allHotels = [];
 for (var i = 0; i < 8; i++) {
@@ -76,7 +73,7 @@ for (var i = 0; i < 8; i++) {
     }
   });
 }
-console.log(allHotels);
+
 var mapPins = document.querySelector('.map__pins');
 
 var pinTemplate = document.querySelector('#pin')
@@ -139,15 +136,14 @@ var renderMapHotel = function (hotel, template) {
   var popupPhotos = hotelMapElement.querySelector('.popup__photos');
   var popupPhoto = hotelMapElement.querySelector('.popup__photos')
     .querySelector('.popup__photo');
+  popupPhoto.src = hotel.offer.photos[0];
 
   if (photosLength > 1) {
-    for (var j = 0; j < photosLength; j++) {
+    for (var j = 1; j < photosLength; j++) {
       var popupPhotoTemplate = popupPhoto.cloneNode(true);
       popupPhotoTemplate.src = hotel.offer.photos[j];
       popupPhotos.appendChild(popupPhotoTemplate);
     }
-  } else {
-    popupPhoto.src = hotel.offer.photos[0];
   }
 
   return hotelMapElement;
