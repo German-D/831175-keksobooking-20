@@ -81,7 +81,7 @@ var renderHotel = function (hotels, template) {
 
   hotelElement.style = 'left: ' + hotels.location.x + 'px; top: ' + hotels.location.y + 'px;';
   hotelElementImg.src = hotels.author.avatar;
-  hotelElementImg.style.alt = hotels.offer.title;
+  hotelElementImg.alt = hotels.offer.title;
 
   return hotelElement;
 };
@@ -234,3 +234,56 @@ var mapPinMainKeydownhandler = function (evt) {
 
 mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
 mapPinMain.addEventListener('keydown', mapPinMainKeydownhandler);
+
+var roomNumber = document.querySelector('#room_number');
+var capacity = document.querySelector('#capacity');
+var capacityOptions = capacity.querySelectorAll('option');
+
+var capacityObj = {
+  oneGuest: capacityOptions[2],
+  twoGuests: capacityOptions[1],
+  threeGuests: capacityOptions[0],
+  noGuests: capacityOptions[3],
+};
+
+var removeAttributes = function (attribute1, attribute2) {
+  for (var y = 0; y < capacityOptions.length; y++) {
+    capacityOptions[y].removeAttribute(attribute1);
+    capacityOptions[y].removeAttribute(attribute2);
+  }
+};
+
+var setAttribute = function (attribute, element) {
+  element.setAttribute(attribute, attribute);
+};
+
+var roomNumberChangeHandler = function () {
+  removeAttributes('selected', 'disabled');
+
+  if (roomNumber.value === '1') {
+    setAttribute('selected', capacityObj.oneGuest);
+    setAttribute('disabled', capacityObj.twoGuests);
+    setAttribute('disabled', capacityObj.threeGuests);
+    setAttribute('disabled', capacityObj.noGuests);
+  }
+
+  if (roomNumber.value === '2') {
+    setAttribute('selected', capacityObj.twoGuests);
+    setAttribute('disabled', capacityObj.threeGuests);
+    setAttribute('disabled', capacityObj.noGuests);
+  }
+
+  if (roomNumber.value === '3') {
+    setAttribute('selected', capacityObj.threeGuests);
+    setAttribute('disabled', capacityObj.noGuests);
+  }
+
+  if (roomNumber.value === '100') {
+    setAttribute('selected', capacityObj.noGuests);
+    setAttribute('disabled', capacityObj.threeGuests);
+    setAttribute('disabled', capacityObj.twoGuests);
+    setAttribute('disabled', capacityObj.oneGuest);
+  }
+};
+
+roomNumber.addEventListener('change', roomNumberChangeHandler);
