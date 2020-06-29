@@ -1,6 +1,6 @@
 'use strict';
 
-var map = document.querySelector('.map');
+// var map = document.querySelector('.map');
 // map.classList.remove('map--faded');
 
 var getRandomNumber = function (min, max) {
@@ -98,21 +98,21 @@ for (var k = 0; k < allHotels.length; k++) {
 
 mapPins.appendChild(fragment);
 
-var getMatchedValue = function (type) {
+// var getMatchedValue = function (type) {
+//
+//   var matchedTypes = {
+//     flat: 'Квартира',
+//     bungalo: 'Бунгало',
+//     house: 'Дом',
+//     palace: 'Дворец',
+//   };
 
-  var matchedTypes = {
-    flat: 'Квартира',
-    bungalo: 'Бунгало',
-    house: 'Дом',
-    palace: 'Дворец',
-  };
+//   return matchedTypes[type];
+// };
 
-  return matchedTypes[type];
-};
-
-var cardTemplate = document.querySelector('#card')
-  .content
-  .querySelector('.popup');
+// var cardTemplate = document.querySelector('#card')
+//   .content
+//   .querySelector('.popup');
 //
 // var renderMapHotel = function (hotel, template) {
 //   var hotelMapElement = template.cloneNode(true);
@@ -247,9 +247,9 @@ var capacityObj = {
 };
 
 var removeAttributes = function (attribute1, attribute2) {
-  for (var y = 0; y < capacityOptions.length; y++) {
-    capacityOptions[y].removeAttribute(attribute1);
-    capacityOptions[y].removeAttribute(attribute2);
+  for (var l = 0; l < capacityOptions.length; l++) {
+    capacityOptions[l].removeAttribute(attribute1);
+    capacityOptions[l].removeAttribute(attribute2);
   }
 };
 
