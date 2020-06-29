@@ -257,10 +257,32 @@ var setAttribute = function (attribute, element) {
   element.setAttribute(attribute, attribute);
 };
 
+setAttribute('disabled', capacityObj.twoGuests);
+setAttribute('disabled', capacityObj.threeGuests);
+setAttribute('disabled', capacityObj.noGuests);
+
 var roomNumberChangeHandler = function () {
   removeAttributes('selected', 'disabled');
 
   if (roomNumber.value === '1') {
+    if (capacity.value === '1') {
+      capacity.value = '1';
+      return;
+    }
+    if (capacity.value === '2') {
+      alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
+      capacity.value = '1';
+      return;
+    }
+    if (capacity.value === '3') {
+      alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
+      capacity.value = '1';
+      return;
+    } else {
+      alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнате');
+      capacity.value = '1';
+    }
+
     setAttribute('selected', capacityObj.oneGuest);
     setAttribute('disabled', capacityObj.twoGuests);
     setAttribute('disabled', capacityObj.threeGuests);
@@ -268,17 +290,54 @@ var roomNumberChangeHandler = function () {
   }
 
   if (roomNumber.value === '2') {
-    setAttribute('selected', capacityObj.twoGuests);
+    console.log('я тут');
+    console.log(capacity.value);
+    if (capacity.value === '1') {
+      console.log('2222222');
+      capacity.value = '1';
+      return;
+    }
+    if (capacity.value === '2') {
+      console.log('2222222');
+      capacity.value = '2';
+      return;
+    }
+    if (capacity.value === '3') {
+      alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнатах');
+      capacity.value = '1';
+      return;
+    } else {
+      alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
+      capacity.value = '1';
+    }
+    setAttribute('selected', capacityObj.oneGuest);
     setAttribute('disabled', capacityObj.threeGuests);
     setAttribute('disabled', capacityObj.noGuests);
   }
 
   if (roomNumber.value === '3') {
-    setAttribute('selected', capacityObj.threeGuests);
+    if (capacity.value === '1') {
+      capacity.value = '1';
+      return;
+    }
+    if (capacity.value === '2') {
+      capacity.value = '2';
+      return;
+    }
+    if (capacity.value === '3') {
+      capacity.value = '3';
+      return;
+    } else {
+      alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
+      capacity.value = '1';
+    }
+    setAttribute('selected', capacityObj.oneGuest);
     setAttribute('disabled', capacityObj.noGuests);
   }
 
   if (roomNumber.value === '100') {
+    alert('В 100 комнатах доступно размещение только для Не гостей');
+    capacity.value = '0';
     setAttribute('selected', capacityObj.noGuests);
     setAttribute('disabled', capacityObj.threeGuests);
     setAttribute('disabled', capacityObj.twoGuests);
