@@ -228,7 +228,7 @@ for (var u = 0; u < adFormFields.length; u++) {
   adFormFields[u].setAttribute('disabled', 'disabled');
 }
 
-var activeForm = function (form, collection, evt) {
+var activeForm = function (form, collection) {
   form.classList.remove('ad-form--disabled');
   for (var t = 0; t < collection.length; t++) {
     collection[t].removeAttribute('disabled');
@@ -287,15 +287,15 @@ var roomNumberChangeHandler = function () {
       capacity.value = '1';
     }
     if (capacity.value === '2') {
-      alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
+      // alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
     }
     if (capacity.value === '3') {
-      alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
+      // alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
     }
     if (capacity.value === '0') {
-      alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнате');
+      // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
     }
     removeAttributes('selected', 'disabled');
@@ -310,15 +310,14 @@ var roomNumberChangeHandler = function () {
       capacity.value = '1';
     }
     if (capacity.value === '2') {
-      console.log('2222222');
       capacity.value = '2';
     }
     if (capacity.value === '3') {
-      alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнатах');
+      // alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
     }
     if (capacity.value === '0') {
-      alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
+      // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
     }
 
@@ -339,7 +338,7 @@ var roomNumberChangeHandler = function () {
       capacity.value = '3';
     }
     if (capacity.value === '0') {
-      alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
+      // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
     }
     removeAttributes('selected', 'disabled');
@@ -348,7 +347,7 @@ var roomNumberChangeHandler = function () {
   }
 
   if (roomNumber.value === '100') {
-    alert('В 100 комнатах доступно размещение только для Не гостей');
+    // alert('В 100 комнатах доступно размещение только для Не гостей');
     capacity.value = '0';
     removeAttributes('selected', 'disabled');
     setAttribute('selected', capacityObj.noGuests);
