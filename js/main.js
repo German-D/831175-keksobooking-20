@@ -1,7 +1,7 @@
 'use strict';
 
-// var map = document.querySelector('.map');
-// map.classList.remove('map--faded');
+var MAIN_PIN_OFFSET_Y = 80;
+var map = document.querySelector('.map');
 
 var getRandomNumber = function (min, max) {
   var randomNumber = min + Math.random() * (max + 1 - min);
@@ -203,32 +203,50 @@ mapPins.appendChild(fragment);
 // mapBlock.appendChild(fragmentMap);
 
 // Проставлю всей форме disabled
+var mapPinMain = document.querySelector('.map__pin--main');
+var mapPinMainWidth = mapPinMain.getBoundingClientRect().width;
+var mapPinMainHeight = mapPinMain.getBoundingClientRect().height;
+
 var adForm = document.querySelector('.ad-form');
 var adFormFields = adForm.querySelectorAll('fieldset');
 var address = document.querySelector('#address');
+var startMainPinX = Math.round(mapPinMain.getBoundingClientRect().x + mapPinMainWidth / 2);
+var startMainPinY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + mapPinMainHeight / 2);
+var mainPinTouchY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + MAIN_PIN_OFFSET_Y);
+
+// Для удобства пользователей значение Y-координаты адреса должно быть ограничено интервалом от 130 до 630
+if (mainPinTouchY > 630) {
+  mainPinTouchY = 630;
+}
+if (mainPinTouchY < 130) {
+  mainPinTouchY = 130;
+}
+
+
+address.value = startMainPinX + ', ' + startMainPinY;
 for (var u = 0; u < adFormFields.length; u++) {
   adFormFields[u].setAttribute('disabled', 'disabled');
 }
-
-var mapPinMain = document.querySelector('.map__pin--main');
 
 var activeForm = function (form, collection, evt) {
   form.classList.remove('ad-form--disabled');
   for (var t = 0; t < collection.length; t++) {
     collection[t].removeAttribute('disabled');
   }
-  address.value = evt.clientX;
+  address.value = startMainPinX + ', ' + mainPinTouchY;
 };
 
 var mapPinMainMousedownHandler = function (evt) {
   if (evt.button === 0) {
     activeForm(adForm, adFormFields, evt);
   }
+  map.classList.remove('map--faded');
 };
 var mapPinMainKeydownhandler = function (evt) {
   if (evt.key === 'Enter') {
     activeForm(adForm, adFormFields, evt);
   }
+  map.classList.remove('map--faded');
 };
 
 
@@ -257,32 +275,30 @@ var setAttribute = function (attribute, element) {
   element.setAttribute(attribute, attribute);
 };
 
+
 setAttribute('disabled', capacityObj.twoGuests);
 setAttribute('disabled', capacityObj.threeGuests);
 setAttribute('disabled', capacityObj.noGuests);
 
 var roomNumberChangeHandler = function () {
-  removeAttributes('selected', 'disabled');
 
   if (roomNumber.value === '1') {
     if (capacity.value === '1') {
       capacity.value = '1';
-      return;
     }
     if (capacity.value === '2') {
       alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
-      return;
     }
     if (capacity.value === '3') {
       alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
-      return;
-    } else {
+    }
+    if (capacity.value === '0') {
       alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
     }
-
+    removeAttributes('selected', 'disabled');
     setAttribute('selected', capacityObj.oneGuest);
     setAttribute('disabled', capacityObj.twoGuests);
     setAttribute('disabled', capacityObj.threeGuests);
@@ -290,26 +306,23 @@ var roomNumberChangeHandler = function () {
   }
 
   if (roomNumber.value === '2') {
-    console.log('я тут');
-    console.log(capacity.value);
     if (capacity.value === '1') {
-      console.log('2222222');
       capacity.value = '1';
-      return;
     }
     if (capacity.value === '2') {
       console.log('2222222');
       capacity.value = '2';
-      return;
     }
     if (capacity.value === '3') {
       alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
-      return;
-    } else {
+    }
+    if (capacity.value === '0') {
       alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
     }
+
+    removeAttributes('selected', 'disabled');
     setAttribute('selected', capacityObj.oneGuest);
     setAttribute('disabled', capacityObj.threeGuests);
     setAttribute('disabled', capacityObj.noGuests);
@@ -318,19 +331,18 @@ var roomNumberChangeHandler = function () {
   if (roomNumber.value === '3') {
     if (capacity.value === '1') {
       capacity.value = '1';
-      return;
     }
     if (capacity.value === '2') {
       capacity.value = '2';
-      return;
     }
     if (capacity.value === '3') {
       capacity.value = '3';
-      return;
-    } else {
+    }
+    if (capacity.value === '0') {
       alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
     }
+    removeAttributes('selected', 'disabled');
     setAttribute('selected', capacityObj.oneGuest);
     setAttribute('disabled', capacityObj.noGuests);
   }
@@ -338,6 +350,7 @@ var roomNumberChangeHandler = function () {
   if (roomNumber.value === '100') {
     alert('В 100 комнатах доступно размещение только для Не гостей');
     capacity.value = '0';
+    removeAttributes('selected', 'disabled');
     setAttribute('selected', capacityObj.noGuests);
     setAttribute('disabled', capacityObj.threeGuests);
     setAttribute('disabled', capacityObj.twoGuests);
