@@ -1,6 +1,9 @@
 'use strict';
 
 var MAIN_PIN_OFFSET_Y = 80;
+var MAX_MAIN_PIN_TOUCH_Y = 630;
+var MIN_MAIN_PIN_TOUCH_Y = 130;
+
 var map = document.querySelector('.map');
 
 var getRandomNumber = function (min, max) {
@@ -48,7 +51,7 @@ for (var y = 1; y < 4; y++) {
 var allHotels = [];
 for (var i = 0; i < 8; i++) {
   var locationX = getRandomNumber(pinWidth, pinCoordinate);
-  var locationY = getRandomNumber(130, 630);
+  var locationY = getRandomNumber(MIN_MAIN_PIN_TOUCH_Y, MAX_MAIN_PIN_TOUCH_Y);
   var iNext = i + 1;
 
   allHotels.push({
@@ -208,25 +211,24 @@ var mapPinMainWidth = mapPinMain.getBoundingClientRect().width;
 var mapPinMainHeight = mapPinMain.getBoundingClientRect().height;
 
 var adForm = document.querySelector('.ad-form');
-var adFormFields = adForm.querySelectorAll('fieldset');
 var address = document.querySelector('#address');
 var startMainPinX = Math.round(mapPinMain.getBoundingClientRect().x + mapPinMainWidth / 2);
 var startMainPinY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + mapPinMainHeight / 2);
 var mainPinTouchY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + MAIN_PIN_OFFSET_Y);
+var adFormFields = adForm.querySelectorAll('fieldset');
 
-// Для удобства пользователей значение Y-координаты адреса должно быть ограничено интервалом от 130 до 630
-if (mainPinTouchY > 630) {
-  mainPinTouchY = 630;
-}
-if (mainPinTouchY < 130) {
-  mainPinTouchY = 130;
-}
+var deactivateform = function (formFields) {
 
+  for (var u = 0; u < formFields.length; u++) {
+    formFields[u].setAttribute('disabled', 'disabled');
+  }
+};
 
 address.value = startMainPinX + ', ' + startMainPinY;
-for (var u = 0; u < adFormFields.length; u++) {
-  adFormFields[u].setAttribute('disabled', 'disabled');
-}
+
+var documentLoadedHandler = function () {
+  deactivateform(adFormFields);
+};
 
 var activeForm = function (form, collection) {
   form.classList.remove('ad-form--disabled');
@@ -241,12 +243,15 @@ var mapPinMainMousedownHandler = function (evt) {
     activeForm(adForm, adFormFields, evt);
   }
   map.classList.remove('map--faded');
+  mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
 };
+
 var mapPinMainKeydownhandler = function (evt) {
   if (evt.key === 'Enter') {
     activeForm(adForm, adFormFields, evt);
   }
   map.classList.remove('map--faded');
+  mapPinMain.removeEventListener('keydown', mapPinMainKeydownhandler);
 };
 
 
@@ -264,23 +269,17 @@ var capacityObj = {
   noGuests: capacityOptions[3],
 };
 
-var removeAttributes = function (attribute1, attribute2) {
-  for (var l = 0; l < capacityOptions.length; l++) {
-    capacityOptions[l].removeAttribute(attribute1);
-    capacityOptions[l].removeAttribute(attribute2);
-  }
-};
-
-var setAttribute = function (attribute, element) {
-  element.setAttribute(attribute, attribute);
-};
-
-
-setAttribute('disabled', capacityObj.twoGuests);
-setAttribute('disabled', capacityObj.threeGuests);
-setAttribute('disabled', capacityObj.noGuests);
+capacityObj.twoGuests.setAttribute('disabled', 'disabled');
+capacityObj.threeGuests.setAttribute('disabled', 'disabled');
+capacityObj.noGuests.setAttribute('disabled', 'disabled');
 
 var roomNumberChangeHandler = function () {
+
+  var removeAttributes = function (attrib) {
+    for (var l = 0; l < capacityOptions.length; l++) {
+      capacityOptions[l].removeAttribute(attrib);
+    }
+  };
 
   if (roomNumber.value === '1') {
     if (capacity.value === '1') {
@@ -298,11 +297,13 @@ var roomNumberChangeHandler = function () {
       // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
     }
-    removeAttributes('selected', 'disabled');
-    setAttribute('selected', capacityObj.oneGuest);
-    setAttribute('disabled', capacityObj.twoGuests);
-    setAttribute('disabled', capacityObj.threeGuests);
-    setAttribute('disabled', capacityObj.noGuests);
+    removeAttributes('selected');
+    removeAttributes('disabled');
+
+    capacityObj.oneGuest.setAttribute('selected', 'selected');
+    capacityObj.twoGuests.setAttribute('disabled', 'disabled');
+    capacityObj.threeGuests.setAttribute('disabled', 'disabled');
+    capacityObj.noGuests.setAttribute('disabled', 'disabled');
   }
 
   if (roomNumber.value === '2') {
@@ -321,10 +322,12 @@ var roomNumberChangeHandler = function () {
       capacity.value = '1';
     }
 
-    removeAttributes('selected', 'disabled');
-    setAttribute('selected', capacityObj.oneGuest);
-    setAttribute('disabled', capacityObj.threeGuests);
-    setAttribute('disabled', capacityObj.noGuests);
+    removeAttributes('selected');
+    removeAttributes('disabled');
+
+    capacityObj.oneGuest.setAttribute('selected', 'selected');
+    capacityObj.threeGuests.setAttribute('disabled', 'disabled');
+    capacityObj.noGuests.setAttribute('disabled', 'disabled');
   }
 
   if (roomNumber.value === '3') {
@@ -341,20 +344,25 @@ var roomNumberChangeHandler = function () {
       // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
     }
-    removeAttributes('selected', 'disabled');
-    setAttribute('selected', capacityObj.oneGuest);
-    setAttribute('disabled', capacityObj.noGuests);
+    removeAttributes('selected');
+    removeAttributes('disabled');
+
+    capacityObj.oneGuest.setAttribute('selected', 'selected');
+    capacityObj.noGuests.setAttribute('disabled', 'disabled');
   }
 
   if (roomNumber.value === '100') {
     // alert('В 100 комнатах доступно размещение только для Не гостей');
     capacity.value = '0';
-    removeAttributes('selected', 'disabled');
-    setAttribute('selected', capacityObj.noGuests);
-    setAttribute('disabled', capacityObj.threeGuests);
-    setAttribute('disabled', capacityObj.twoGuests);
-    setAttribute('disabled', capacityObj.oneGuest);
+    removeAttributes('selected');
+    removeAttributes('disabled');
+
+    capacityObj.noGuests.setAttribute('selected', 'selected');
+    capacityObj.oneGuest.setAttribute('disabled', 'disabled');
+    capacityObj.twoGuests.setAttribute('disabled', 'disabled');
+    capacityObj.threeGuests.setAttribute('disabled', 'disabled');
+
   }
 };
-
+document.addEventListener('DOMContentLoaded', documentLoadedHandler);
 roomNumber.addEventListener('change', roomNumberChangeHandler);
