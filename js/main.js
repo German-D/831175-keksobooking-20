@@ -217,7 +217,13 @@ var startMainPinY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffse
 var mainPinTouchY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + MAIN_PIN_OFFSET_Y);
 var adFormFields = adForm.querySelectorAll('fieldset');
 
-var deactivateform = function (formFields) {
+var disabledCapacityExceptOne = function () {
+  capacityObj.twoGuests.setAttribute('disabled', 'disabled');
+  capacityObj.threeGuests.setAttribute('disabled', 'disabled');
+  capacityObj.noGuests.setAttribute('disabled', 'disabled');
+};
+
+var deactivateElements = function (formFields) {
 
   for (var u = 0; u < formFields.length; u++) {
     formFields[u].setAttribute('disabled', 'disabled');
@@ -226,32 +232,28 @@ var deactivateform = function (formFields) {
 
 address.value = startMainPinX + ', ' + startMainPinY;
 
-var documentLoadedHandler = function () {
-  deactivateform(adFormFields);
-};
-
-var activeForm = function (form, collection) {
+var activateForm = function (form, collection) {
   form.classList.remove('ad-form--disabled');
   for (var t = 0; t < collection.length; t++) {
     collection[t].removeAttribute('disabled');
   }
   address.value = startMainPinX + ', ' + mainPinTouchY;
+  map.classList.remove('map--faded');
+  mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
+  mapPinMain.removeEventListener('keydown', mapPinMainKeydownhandler);
+  disabledCapacityExceptOne();
 };
 
 var mapPinMainMousedownHandler = function (evt) {
   if (evt.button === 0) {
-    activeForm(adForm, adFormFields, evt);
+    activateForm(adForm, adFormFields, evt);
   }
-  map.classList.remove('map--faded');
-  mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
 };
 
 var mapPinMainKeydownhandler = function (evt) {
   if (evt.key === 'Enter') {
-    activeForm(adForm, adFormFields, evt);
+    activateForm(adForm, adFormFields, evt);
   }
-  map.classList.remove('map--faded');
-  mapPinMain.removeEventListener('keydown', mapPinMainKeydownhandler);
 };
 
 
@@ -269,17 +271,13 @@ var capacityObj = {
   noGuests: capacityOptions[3],
 };
 
-capacityObj.twoGuests.setAttribute('disabled', 'disabled');
-capacityObj.threeGuests.setAttribute('disabled', 'disabled');
-capacityObj.noGuests.setAttribute('disabled', 'disabled');
+var removeAttributes = function (attrib, element) {
+  for (var l = 0; l < element.length; l++) {
+    element[l].removeAttribute(attrib);
+  }
+};
 
 var roomNumberChangeHandler = function () {
-
-  var removeAttributes = function (attrib) {
-    for (var l = 0; l < capacityOptions.length; l++) {
-      capacityOptions[l].removeAttribute(attrib);
-    }
-  };
 
   if (roomNumber.value === '1') {
     if (capacity.value === '1') {
@@ -297,13 +295,11 @@ var roomNumberChangeHandler = function () {
       // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнате');
       capacity.value = '1';
     }
-    removeAttributes('selected');
-    removeAttributes('disabled');
+    removeAttributes('selected', capacityOptions);
+    removeAttributes('disabled', capacityOptions);
 
     capacityObj.oneGuest.setAttribute('selected', 'selected');
-    capacityObj.twoGuests.setAttribute('disabled', 'disabled');
-    capacityObj.threeGuests.setAttribute('disabled', 'disabled');
-    capacityObj.noGuests.setAttribute('disabled', 'disabled');
+    disabledCapacityExceptOne();
   }
 
   if (roomNumber.value === '2') {
@@ -322,8 +318,8 @@ var roomNumberChangeHandler = function () {
       capacity.value = '1';
     }
 
-    removeAttributes('selected');
-    removeAttributes('disabled');
+    removeAttributes('selected', capacityOptions);
+    removeAttributes('disabled', capacityOptions);
 
     capacityObj.oneGuest.setAttribute('selected', 'selected');
     capacityObj.threeGuests.setAttribute('disabled', 'disabled');
@@ -344,8 +340,8 @@ var roomNumberChangeHandler = function () {
       // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
       capacity.value = '1';
     }
-    removeAttributes('selected');
-    removeAttributes('disabled');
+    removeAttributes('selected', capacityOptions);
+    removeAttributes('disabled', capacityOptions);
 
     capacityObj.oneGuest.setAttribute('selected', 'selected');
     capacityObj.noGuests.setAttribute('disabled', 'disabled');
@@ -354,8 +350,8 @@ var roomNumberChangeHandler = function () {
   if (roomNumber.value === '100') {
     // alert('В 100 комнатах доступно размещение только для Не гостей');
     capacity.value = '0';
-    removeAttributes('selected');
-    removeAttributes('disabled');
+    removeAttributes('selected', capacityOptions);
+    removeAttributes('disabled', capacityOptions);
 
     capacityObj.noGuests.setAttribute('selected', 'selected');
     capacityObj.oneGuest.setAttribute('disabled', 'disabled');
@@ -364,5 +360,7 @@ var roomNumberChangeHandler = function () {
 
   }
 };
-document.addEventListener('DOMContentLoaded', documentLoadedHandler);
+document.addEventListener('DOMContentLoaded', function () {
+  deactivateElements(adFormFields);
+});
 roomNumber.addEventListener('change', roomNumberChangeHandler);
