@@ -293,20 +293,24 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
 // Все варианты
   const options = [
     {
-      select1Value: 1,
-      allowableValues: [1],
+      select1Value: '1',
+      allowableValues: ['1'],
+      allowableSelects: ['1'],
     },
     {
-      select1Value: 2,
-      allowableValues: [1, 2],
+      select1Value: '2',
+      allowableValues: ['1', '2'],
+      allowableSelects: ['1', '2'],
     },
     {
-      select1Value: 3,
-      allowableValues: [1, 2, 3],
+      select1Value: '3',
+      allowableValues: ['1', '2', '3'],
+      allowableSelects: ['1', '2', '3'],
     },
     {
-      select1Value: 100,
-      allowableValues: [0],
+      select1Value: '100',
+      allowableValues: ['0'],
+      allowableSelects: ['0'],
     },
   ];
 
@@ -324,14 +328,26 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
 
     .forEach((option) => {
       const allowableValues = currentOption.allowableValues;    // Массив допустимых Capacity, например [1, 2],
-      console.log(allowableValues);
+      const allowableSelects = currentOption.allowableSelects; // Массив допустимых Selects, например [1, 2],
 
-      if (allowableValues.includes(parseInt(option.value))) {   // Если в массиве возможных Capacity есть значение этого Capacity
+      if (allowableValues.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
         option.removeAttribute('disabled'); // То удали атрибут disabled
       } else {
         option.setAttribute('disabled', 'disabled');  // Иначе добавь атрибут disabled
       }
     });
+
+  Array.from(select2Options)      // Коллекцию возможных Capacity перевели в массив
+    .forEach((option) => {
+      const allowableSelects = currentOption.allowableSelects; // Массив допустимых Selects, например [1, 2],
+
+      if (allowableSelects.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
+        option.setAttribute('selected', 'selected');  // Иначе добавь атрибут selected
+      } else {
+        option.removeAttribute('selected'); // То удали атрибут selected
+      }
+    });
+
 };
 
 
