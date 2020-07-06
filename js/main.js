@@ -288,22 +288,22 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
     {
       select1Value: '1',
       allowableValues: ['1'],
-      allowableSelects: ['1'],
+      // allowableSelects: ['1'],
     },
     {
       select1Value: '2',
       allowableValues: ['1', '2'],
-      allowableSelects: ['2'],
+      // allowableSelects: ['2'],
     },
     {
       select1Value: '3',
       allowableValues: ['1', '2', '3'],
-      allowableSelects: ['3'],
+      // allowableSelects: ['3'],
     },
     {
       select1Value: '100',
       allowableValues: ['0'],
-      allowableSelects: ['0'],
+      // allowableSelects: ['0'],
     },
   ];
 
@@ -326,11 +326,12 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
         option.setAttribute('disabled', 'disabled');  // Иначе добавь атрибут disabled
       }
 
-      if (allowableSelects.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
-        option.setAttribute('selected', 'selected');  // Иначе добавь атрибут selected
-      } else {
-        option.removeAttribute('selected'); // То удали атрибут selected
-      }
+      // Если нужно менять значение во втором селекте
+      // if (allowableSelects.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
+      //   option.setAttribute('selected', 'selected');  // Иначе добавь атрибут selected
+      // } else {
+      //   option.removeAttribute('selected'); // То удали атрибут selected
+      // }
     });
 };
 
