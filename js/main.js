@@ -216,12 +216,8 @@ var startMainPinX = Math.round(mapPinMain.getBoundingClientRect().x + mapPinMain
 var startMainPinY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + mapPinMainHeight / 2);
 var mainPinTouchY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + MAIN_PIN_OFFSET_Y);
 var adFormFields = adForm.querySelectorAll('fieldset');
-
-var defaultDisabledCapacity = function () {
-  capacityObj.twoGuests.setAttribute('disabled', 'disabled');
-  capacityObj.threeGuests.setAttribute('disabled', 'disabled');
-  capacityObj.noGuests.setAttribute('disabled', 'disabled');
-};
+var roomNumber = document.querySelector('#room_number');
+var capacity = document.querySelector('#capacity');
 
 var deactivateElements = function (elements) {
   for (var u = 0; u < elements.length; u++) {
@@ -236,7 +232,8 @@ var activatePage = function () {
   map.classList.remove('map--faded');
   mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
   mapPinMain.removeEventListener('keydown', mapPinMainKeydownhandler);
-  defaultDisabledCapacity();
+  // defaultDisabledCapacity();
+  actualConnectedSelects(roomNumber, capacity);
   adForm.classList.remove('ad-form--disabled');
   activateElements(adFormFields);
 };
@@ -259,31 +256,18 @@ var mapPinMainKeydownhandler = function (evt) {
   }
 };
 
-
 mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
 mapPinMain.addEventListener('keydown', mapPinMainKeydownhandler);
 
-var roomNumber = document.querySelector('#room_number');
-var capacity = document.querySelector('#capacity');
-var capacityOptions = capacity.querySelectorAll('option');
+var actualConnectedSelects = function (selectEl1, selectEl2) {
 
-var capacityObj = {
-  oneGuest: capacityOptions[2],
-  twoGuests: capacityOptions[1],
-  threeGuests: capacityOptions[0],
-  noGuests: capacityOptions[3],
-};
-
-var actualConnectedSelects = (selectEl1, selectEl2) => {
-
-// Значение первого селекта
+  // Значение первого селекта
   var select1Value = selectEl1.value;
 
-// Коллекция возможных Capacity. NodeList(4) [option, option, option, option]
+  // Значение всех option у второго селекта
   var select2Options = selectEl2.querySelectorAll('option');
 
-  console.log(select1Value);
-// Все варианты
+  // Все варианты
   var options = [
     {
       select1Value: '1',
@@ -307,25 +291,25 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
     },
   ];
 
-// Объект, один из options
-  var currentOption = options.find((option) => select1Value == option.select1Value);
-  console.log(currentOption);
+  // Актуальный объект из options
+  var currentOption = options.find(function (option) {
+    return select1Value === option.select1Value;
+  });
 
   if (!currentOption) {
     return;
   }
 
-  Array.from(select2Options)      // Коллекцию возможных Capacity перевели в массив
-    .forEach((option) => {
-      var allowableValues = currentOption.allowableValues;    // Массив допустимых Capacity, например [1, 2],
-      var allowableSelects = currentOption.allowableSelects; // Массив допустимых Selects, например [1, 2],
+  Array.from(select2Options)// Значение всех option у второго селекта перевели в массив
+    .forEach(function (option) {
+      var allowableValues = currentOption.allowableValues;// Массив допустимых Capacity, например [1, 2],
+      // var allowableSelects = currentOption.allowableSelects; // Массив допустимых Selects, например [1, 2],
 
-      if (allowableValues.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
+      if (allowableValues.includes(option.value)) { // Если в массиве возможных Capacity есть значение этого Capacity
         option.removeAttribute('disabled'); // То удали атрибут disabled
       } else {
-        option.setAttribute('disabled', 'disabled');  // Иначе добавь атрибут disabled
+        option.setAttribute('disabled', 'disabled');// Иначе добавь атрибут disabled
       }
-
       // Если нужно менять значение во втором селекте
       // if (allowableSelects.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
       //   option.setAttribute('selected', 'selected');  // Иначе добавь атрибут selected
