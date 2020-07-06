@@ -217,14 +217,13 @@ var startMainPinY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffse
 var mainPinTouchY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffset + MAIN_PIN_OFFSET_Y);
 var adFormFields = adForm.querySelectorAll('fieldset');
 
-var disabledCapacityExceptOne = function () {
+var defaultDisabledCapacity = function () {
   capacityObj.twoGuests.setAttribute('disabled', 'disabled');
   capacityObj.threeGuests.setAttribute('disabled', 'disabled');
   capacityObj.noGuests.setAttribute('disabled', 'disabled');
 };
 
 var deactivateElements = function (elements) {
-
   for (var u = 0; u < elements.length; u++) {
     elements[u].setAttribute('disabled', 'disabled');
   }
@@ -237,7 +236,7 @@ var activatePage = function () {
   map.classList.remove('map--faded');
   mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
   mapPinMain.removeEventListener('keydown', mapPinMainKeydownhandler);
-  disabledCapacityExceptOne();
+  defaultDisabledCapacity();
   adForm.classList.remove('ad-form--disabled');
   activateElements(adFormFields);
 };
@@ -275,23 +274,17 @@ var capacityObj = {
   noGuests: capacityOptions[3],
 };
 
-var removeAttributes = function (attrib, element) {
-  for (var l = 0; l < element.length; l++) {
-    element[l].removeAttribute(attrib);
-  }
-};
-
 var actualConnectedSelects = (selectEl1, selectEl2) => {
 
 // Значение первого селекта
-  const select1Value = selectEl1.value;
+  var select1Value = selectEl1.value;
 
 // Коллекция возможных Capacity. NodeList(4) [option, option, option, option]
-  const select2Options = selectEl2.querySelectorAll('option');
+  var select2Options = selectEl2.querySelectorAll('option');
 
   console.log(select1Value);
 // Все варианты
-  const options = [
+  var options = [
     {
       select1Value: '1',
       allowableValues: ['1'],
@@ -300,12 +293,12 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
     {
       select1Value: '2',
       allowableValues: ['1', '2'],
-      allowableSelects: ['1', '2'],
+      allowableSelects: ['2'],
     },
     {
       select1Value: '3',
       allowableValues: ['1', '2', '3'],
-      allowableSelects: ['1', '2', '3'],
+      allowableSelects: ['3'],
     },
     {
       select1Value: '100',
@@ -315,31 +308,23 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
   ];
 
 // Объект, один из options
-  const currentOption = options.find((option) => select1Value == option.select1Value);
+  var currentOption = options.find((option) => select1Value == option.select1Value);
   console.log(currentOption);
 
   if (!currentOption) {
     return;
   }
 
-  console.log(Array.from(select2Options));
-
   Array.from(select2Options)      // Коллекцию возможных Capacity перевели в массив
-
     .forEach((option) => {
-      const allowableValues = currentOption.allowableValues;    // Массив допустимых Capacity, например [1, 2],
-      const allowableSelects = currentOption.allowableSelects; // Массив допустимых Selects, например [1, 2],
+      var allowableValues = currentOption.allowableValues;    // Массив допустимых Capacity, например [1, 2],
+      var allowableSelects = currentOption.allowableSelects; // Массив допустимых Selects, например [1, 2],
 
       if (allowableValues.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
         option.removeAttribute('disabled'); // То удали атрибут disabled
       } else {
         option.setAttribute('disabled', 'disabled');  // Иначе добавь атрибут disabled
       }
-    });
-
-  Array.from(select2Options)      // Коллекцию возможных Capacity перевели в массив
-    .forEach((option) => {
-      const allowableSelects = currentOption.allowableSelects; // Массив допустимых Selects, например [1, 2],
 
       if (allowableSelects.includes(option.value)) {   // Если в массиве возможных Capacity есть значение этого Capacity
         option.setAttribute('selected', 'selected');  // Иначе добавь атрибут selected
@@ -347,9 +332,7 @@ var actualConnectedSelects = (selectEl1, selectEl2) => {
         option.removeAttribute('selected'); // То удали атрибут selected
       }
     });
-
 };
-
 
 var roomNumberChangeHandler = function () {
   actualConnectedSelects(roomNumber, capacity);
@@ -358,89 +341,3 @@ document.addEventListener('DOMContentLoaded', function () {
   deactivateElements(adFormFields);
 });
 roomNumber.addEventListener('change', roomNumberChangeHandler);
-
-
-
-
-
-
-// if (roomNumber.value === '1') {
-//   if (capacity.value === '1') {
-//     capacity.value = '1';
-//   }
-//   if (capacity.value === '2') {
-//     // alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
-//     capacity.value = '1';
-//   }
-//   if (capacity.value === '3') {
-//     // alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнате');
-//     capacity.value = '1';
-//   }
-//   if (capacity.value === '0') {
-//     // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнате');
-//     capacity.value = '1';
-//   }
-//   removeAttributes('selected', capacityOptions);
-//   removeAttributes('disabled', capacityOptions);
-//
-//   capacityObj.oneGuest.setAttribute('selected', 'selected');
-//   disabledCapacityExceptOne();
-// }
-//
-// if (roomNumber.value === '2') {
-//   if (capacity.value === '1') {
-//     capacity.value = '1';
-//   }
-//   if (capacity.value === '2') {
-//     capacity.value = '2';
-//   }
-//   if (capacity.value === '3') {
-//     // alert('Недоступен выбор количества мест для ' + capacity.value + ' гостей в ' + roomNumber.value + ' комнатах');
-//     capacity.value = '1';
-//   }
-//   if (capacity.value === '0') {
-//     // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
-//     capacity.value = '1';
-//   }
-//
-//   removeAttributes('selected', capacityOptions);
-//   removeAttributes('disabled', capacityOptions);
-//
-//   capacityObj.oneGuest.setAttribute('selected', 'selected');
-//   capacityObj.threeGuests.setAttribute('disabled', 'disabled');
-//   capacityObj.noGuests.setAttribute('disabled', 'disabled');
-// }
-//
-// if (roomNumber.value === '3') {
-//   if (capacity.value === '1') {
-//     capacity.value = '1';
-//   }
-//   if (capacity.value === '2') {
-//     capacity.value = '2';
-//   }
-//   if (capacity.value === '3') {
-//     capacity.value = '3';
-//   }
-//   if (capacity.value === '0') {
-//     // alert('Недоступен выбор Не для гостей в ' + roomNumber.value + ' комнатах');
-//     capacity.value = '1';
-//   }
-//   removeAttributes('selected', capacityOptions);
-//   removeAttributes('disabled', capacityOptions);
-//
-//   capacityObj.oneGuest.setAttribute('selected', 'selected');
-//   capacityObj.noGuests.setAttribute('disabled', 'disabled');
-// }
-//
-// if (roomNumber.value === '100') {
-//   // alert('В 100 комнатах доступно размещение только для Не гостей');
-//   capacity.value = '0';
-//   removeAttributes('selected', capacityOptions);
-//   removeAttributes('disabled', capacityOptions);
-//
-//   capacityObj.noGuests.setAttribute('selected', 'selected');
-//   capacityObj.oneGuest.setAttribute('disabled', 'disabled');
-//   capacityObj.twoGuests.setAttribute('disabled', 'disabled');
-//   capacityObj.threeGuests.setAttribute('disabled', 'disabled');
-//
-// }
