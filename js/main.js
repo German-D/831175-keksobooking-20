@@ -234,6 +234,7 @@ var activatePage = function () {
   mapPinMain.removeEventListener('keydown', mapPinMainKeydownhandler);
   // defaultDisabledCapacity();
   actualConnectedSelects(roomNumber, capacity);
+  actualConnectedTypes(type, price);
   adForm.classList.remove('ad-form--disabled');
   activateElements(adFormFields);
 };
@@ -326,6 +327,14 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 roomNumber.addEventListener('change', roomNumberChangeHandler);
 
+<!-- Обработчик на всём документе нажания Esc -->
+var documentKeydownHandler = function (evt) {
+  if (evt.key === 'Escape') {
+    removePopupNode();
+    document.removeEventListener('keydown', documentKeydownHandler);
+  }
+};
+
 <!-- Функция удаления Ноды подробней отеля -->
 var removePopupNode = function () {
   var noda = document.querySelector('.popup');
@@ -336,34 +345,41 @@ var removePopupNode = function () {
 
 <!-- Отрисовка окна подробностей отеля -->
 var openPopup = function (evt) {
-  removePopupNode();
+  <!-- Убираю вариант нажатия на главную метку -->
 
-  var myHotel;
-  // console.log(evt);
+  // !! Тут надо как-то прикрутить target.closest, но я не понял как. Но зато мой колхоз работает :)
+  if (evt.target.alt !== 'Метка объявления' && evt.target.tagName !== 'ellipse' && evt.target.tagName !== 'textPath') {
+    removePopupNode();
+    var myHotel;
 
-  <!-- Получаю мой отель. Ищу scr картинки у evt и через find нахожу нужный объект отеля -->
-  if (evt.type === 'click') {
-    var pictPath = evt.target.attributes[0].nodeValue;
-    myHotel = allHotels.find(function (item) {
-      return item.author.avatar === pictPath;
-    });
+    <!-- Получаю мой отель. Ищу scr картинки у evt и через find нахожу нужный объект отеля -->
+    if (evt.target.tagName === 'IMG') {
+      var pictPath = evt.target.attributes[0].nodeValue;
+      myHotel = allHotels.find(function (item) {
+        return item.author.avatar === pictPath;
+      });
+    }
+    if (evt.target.tagName === 'BUTTON') {
+      var buttonPictPath = evt.target.childNodes[1].attributes[0].nodeValue;
+      myHotel = allHotels.find(function (item) {
+        return item.author.avatar === buttonPictPath;
+      });
+    }
+
+    <!-- Отрисую подробности выбранного отеля-->
+    newMapHotel = renderMapHotel(myHotel, cardTemplate);
+    mapBlock.appendChild(newMapHotel);
+
+    <!-- Сразу-же после отрисовки ногового окна добавляю обработчик клика на крестик -->
+    var popupClose = document.querySelector('.popup__close');
+    var popupCloseClickHandler = function () {
+      removePopupNode();
+    };
+    popupClose.addEventListener('click', popupCloseClickHandler);
+
+    <!-- Сразу-же после отрисовки ногового окна добавлю на весь документ обработчк на Esc кот закроет подр. отеля -->
+    document.addEventListener('keydown', documentKeydownHandler);
   }
-  if (evt.type === 'keydown') {
-    var buttonPictPath = evt.target.childNodes[1].attributes[0].nodeValue;
-    myHotel = allHotels.find(function (item) {
-      return item.author.avatar === buttonPictPath;
-    });
-  }
-  // console.log(myHotel);
-
-  newMapHotel = renderMapHotel(myHotel, cardTemplate);
-  mapBlock.appendChild(newMapHotel);
-
-  // var popupClose = document.querySelector('.popup__close');
-  // var popupCloseClickHandler = function () {
-  //   removePopupNode();
-  // };
-  // popupClose.addEventListener('click', popupCloseClickHandler);
 };
 
 <!-- Создаю два обработчика на клик и клавишу ентер по иконке отеля -->
@@ -385,10 +401,108 @@ for (var j = 0; j < mapPin.length; j++) {
   mapPin[j].addEventListener('keydown', mapPinKeydownHandler);
 }
 
-<!-- На весь документ вешаю обработчк нажатия Esc который закроет подробности отеля -->
-document.addEventListener('keydown', function (evt) {
-  if (evt.key === 'Escape') {
-    removePopupNode();
-    // удалить  документа обрабтчик если нет окна !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+<!-- Логика «Тип жилья» и «Цена за ночь» -->
+var actualConnectedTypes = function (select1, select2) {
+  // Значение первого селекта
+  var select1Value = select1.value;
+
+  // Все варианты
+  var matchedOptions = [
+    {
+      select1Value: 'bungalo',
+      minPrice: '0',
+    },
+    {
+      select1Value: 'flat',
+      minPrice: '1000',
+    },
+    {
+      select1Value: 'house',
+      minPrice: '5000',
+    },
+    {
+      select1Value: 'palace',
+      minPrice: '10000',
+    },
+  ];
+
+  // Актуальный объект из matchedOptions
+  var currentMatchedOption = matchedOptions.find(function (matchedOption) {
+    return select1Value === matchedOption.select1Value;
+  });
+
+  if (!currentMatchedOption) {
+    return;
   }
-});
+
+  select2.setAttribute('min', currentMatchedOption.minPrice);
+  select2.setAttribute('placeholder', currentMatchedOption.minPrice);
+};
+
+var type = document.querySelector('#type');
+var price = document.querySelector('#price');
+var typeChangeHandler = function () {
+  actualConnectedTypes(type, price);
+};
+type.addEventListener('change', typeChangeHandler);
+
+<!-- Логика «Время заезда» и «Время выезда» -->
+var actualConnectedTimes = function (select1, select2, evt) {
+
+  <!-- Если клик на «Время заезда», то меняю выбранное значение в «Время выезда»-->
+  var select1Values = select1.querySelectorAll('option');
+  var select2Values = select2.querySelectorAll('option');
+
+  if (evt.target.id === 'timein') {
+    select2.value = select1.value;
+
+    Array.from(select2Values)
+      .forEach(function (option) {
+        if (option.value === select1.value) {
+          option.setAttribute('selected', '');
+        } else {
+          option.removeAttribute('selected');
+        }
+      });
+
+    Array.from(select1Values)
+      .forEach(function (option) {
+        if (option.value === select1.value) {
+          option.setAttribute('selected', '');
+        } else {
+          option.removeAttribute('selected');
+        }
+      });
+  } else {
+    <!-- Если клик на «Время выезда», то меняю выбранное значение во на «Время заезда»  -->
+    select1.value = select2.value;
+
+    Array.from(select1Values)
+      .forEach(function (option) {
+        if (option.value === select2.value) {
+          option.setAttribute('selected', '');
+        } else {
+          option.removeAttribute('selected');
+        }
+      });
+
+    Array.from(select2Values)
+      .forEach(function (option) {
+        if (option.value === select2.value) {
+          option.setAttribute('selected', '');
+        } else {
+          option.removeAttribute('selected');
+        }
+      });
+  }
+};
+
+var timeIn = document.querySelector('#timein');
+var timeOut = document.querySelector('#timeout');
+var timeInChangeHandler = function (evt) {
+  actualConnectedTimes(timeIn, timeOut, evt);
+};
+timeIn.addEventListener('change', timeInChangeHandler);
+timeOut.addEventListener('change', timeInChangeHandler);
+
