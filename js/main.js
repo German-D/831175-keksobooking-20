@@ -326,8 +326,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 roomNumber.addEventListener('change', roomNumberChangeHandler);
 
-
-
 <!-- Функция удаления Ноды подробней отеля -->
 var removePopupNode = function () {
   var noda = document.querySelector('.popup');
@@ -341,7 +339,7 @@ var openPopup = function (evt) {
   removePopupNode();
 
   var myHotel;
-console.log(evt);
+  // console.log(evt);
 
   <!-- Получаю мой отель. Ищу scr картинки у evt и через find нахожу нужный объект отеля -->
   if (evt.type === 'click') {
