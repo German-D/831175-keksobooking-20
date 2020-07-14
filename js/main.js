@@ -99,8 +99,6 @@ for (var k = 0; k < allHotels.length; k++) {
   fragment.appendChild(newHotel);
 }
 
-mapPins.appendChild(fragment);
-
 var getMatchedValue = function (type) {
 
   var matchedTypes = {
@@ -117,7 +115,7 @@ var cardTemplate = document.querySelector('#card')
   .content
   .querySelector('.popup');
 
-var renderMapHotel = function (hotel, template) {
+var getMapHotel = function (hotel, template) {
   var hotelMapElement = template.cloneNode(true);
 
   var popupTitle = hotelMapElement.querySelector('.popup__title');
@@ -198,13 +196,6 @@ var renderMapHotel = function (hotel, template) {
 };
 
 
-var mapBlock = document.querySelector('.map');
-var fragmentMap = document.createDocumentFragment();
-var newMapHotel = renderMapHotel(allHotels[0], cardTemplate);
-fragmentMap.appendChild(newMapHotel);
-
-mapBlock.appendChild(fragmentMap);
-
 // Проставлю всей форме disabled
 var mapPinMain = document.querySelector('.map__pin--main');
 var mapPinMainWidth = mapPinMain.getBoundingClientRect().width;
@@ -218,6 +209,7 @@ var mainPinTouchY = Math.round(mapPinMain.getBoundingClientRect().y + pageYOffse
 var adFormFields = adForm.querySelectorAll('fieldset');
 var roomNumber = document.querySelector('#room_number');
 var capacity = document.querySelector('#capacity');
+var mapBlock = document.querySelector('.map');
 
 var deactivateElements = function (elements) {
   for (var u = 0; u < elements.length; u++) {
@@ -228,6 +220,7 @@ var deactivateElements = function (elements) {
 address.value = startMainPinX + ', ' + startMainPinY;
 
 var activatePage = function () {
+
   address.value = startMainPinX + ', ' + mainPinTouchY;
   map.classList.remove('map--faded');
   mapPinMain.removeEventListener('mousedown', mapPinMainMousedownHandler);
@@ -237,6 +230,16 @@ var activatePage = function () {
   actualConnectedTypes(type, price);
   adForm.classList.remove('ad-form--disabled');
   activateElements(adFormFields);
+
+
+  <!-- На все значки отелей вешаю обработчик на клик и на нажание клавиши ентер -->
+  mapPins.appendChild(fragment);
+  var mapPin = document.querySelectorAll('.map__pin');
+
+  for (var j = 1; j < mapPin.length; j++) {
+    mapPin[j].addEventListener('click', mapPinClickHandler);
+    mapPin[j].addEventListener('keydown', mapPinKeydownHandler);
+  }
 };
 
 var activateElements = function (elements) {
@@ -345,41 +348,38 @@ var removePopupNode = function () {
 
 <!-- Отрисовка окна подробностей отеля -->
 var openPopup = function (evt) {
-  <!-- Убираю вариант нажатия на главную метку -->
 
-  // !! Тут надо как-то прикрутить target.closest, но я не понял как. Но зато мой колхоз работает :)
-  if (evt.target.alt !== 'Метка объявления' && evt.target.tagName !== 'ellipse' && evt.target.tagName !== 'textPath') {
-    removePopupNode();
-    var myHotel;
 
-    <!-- Получаю мой отель. Ищу scr картинки у evt и через find нахожу нужный объект отеля -->
-    if (evt.target.tagName === 'IMG') {
-      var pictPath = evt.target.attributes[0].nodeValue;
-      myHotel = allHotels.find(function (item) {
-        return item.author.avatar === pictPath;
-      });
-    }
-    if (evt.target.tagName === 'BUTTON') {
-      var buttonPictPath = evt.target.childNodes[1].attributes[0].nodeValue;
-      myHotel = allHotels.find(function (item) {
-        return item.author.avatar === buttonPictPath;
-      });
-    }
+  removePopupNode();
+  var myHotel;
 
-    <!-- Отрисую подробности выбранного отеля-->
-    newMapHotel = renderMapHotel(myHotel, cardTemplate);
-    mapBlock.appendChild(newMapHotel);
-
-    <!-- Сразу-же после отрисовки ногового окна добавляю обработчик клика на крестик -->
-    var popupClose = document.querySelector('.popup__close');
-    var popupCloseClickHandler = function () {
-      removePopupNode();
-    };
-    popupClose.addEventListener('click', popupCloseClickHandler);
-
-    <!-- Сразу-же после отрисовки ногового окна добавлю на весь документ обработчк на Esc кот закроет подр. отеля -->
-    document.addEventListener('keydown', documentKeydownHandler);
+  <!-- Получаю мой отель. Ищу scr картинки у evt и через find нахожу нужный объект отеля -->
+  if (evt.target.tagName === 'IMG') {
+    var pictPath = evt.target.attributes[0].nodeValue;
+    myHotel = allHotels.find(function (item) {
+      return item.author.avatar === pictPath;
+    });
   }
+  if (evt.target.tagName === 'BUTTON') {
+    var buttonPictPath = evt.target.childNodes[1].attributes[0].nodeValue;
+    myHotel = allHotels.find(function (item) {
+      return item.author.avatar === buttonPictPath;
+    });
+  }
+
+  <!-- Отрисую подробности выбранного отеля-->
+  var newMapHotel = getMapHotel(myHotel, cardTemplate);
+  mapBlock.appendChild(newMapHotel);
+
+  <!-- Сразу-же после отрисовки ногового окна добавляю обработчик клика на крестик -->
+  var popupClose = document.querySelector('.popup__close');
+  var popupCloseClickHandler = function () {
+    removePopupNode();
+  };
+  popupClose.addEventListener('click', popupCloseClickHandler);
+
+  <!-- Сразу-же после отрисовки ногового окна добавлю на весь документ обработчк на Esc кот закроет подр. отеля -->
+  document.addEventListener('keydown', documentKeydownHandler);
 };
 
 <!-- Создаю два обработчика на клик и клавишу ентер по иконке отеля -->
@@ -392,15 +392,6 @@ var mapPinKeydownHandler = function (evt) {
     openPopup(evt);
   }
 };
-
-<!-- На все значки отелей вешаю обработчик на клик и на нажание клавиши ентер -->
-var mapPin = document.querySelectorAll('.map__pin');
-
-for (var j = 0; j < mapPin.length; j++) {
-  mapPin[j].addEventListener('click', mapPinClickHandler);
-  mapPin[j].addEventListener('keydown', mapPinKeydownHandler);
-}
-
 
 <!-- Логика «Тип жилья» и «Цена за ночь» -->
 var actualConnectedTypes = function (select1, select2) {
@@ -457,14 +448,14 @@ var actualConnectedTimes = function (select1, select2, evt) {
   if (evt.target.id === 'timein') {
     select2.value = select1.value;
 
-    Array.from(select2Values)
-      .forEach(function (option) {
-        if (option.value === select1.value) {
-          option.setAttribute('selected', '');
-        } else {
-          option.removeAttribute('selected');
-        }
-      });
+    // Array.from(select2Values)
+    //   .forEach(function (option) {
+    //     if (option.value === select1.value) {
+    //       option.setAttribute('selected', '');
+    //     } else {
+    //       option.removeAttribute('selected');
+    //     }
+    //   });
 
     Array.from(select1Values)
       .forEach(function (option) {
@@ -478,14 +469,14 @@ var actualConnectedTimes = function (select1, select2, evt) {
     <!-- Если клик на «Время выезда», то меняю выбранное значение во на «Время заезда»  -->
     select1.value = select2.value;
 
-    Array.from(select1Values)
-      .forEach(function (option) {
-        if (option.value === select2.value) {
-          option.setAttribute('selected', '');
-        } else {
-          option.removeAttribute('selected');
-        }
-      });
+    // Array.from(select1Values)
+    //   .forEach(function (option) {
+    //     if (option.value === select2.value) {
+    //       option.setAttribute('selected', '');
+    //     } else {
+    //       option.removeAttribute('selected');
+    //     }
+    //   });
 
     Array.from(select2Values)
       .forEach(function (option) {
