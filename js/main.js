@@ -34,6 +34,15 @@ var featuresInHotel = [
   'conditioner',
 ];
 
+var featuresInHotelMatch = {
+  wifi: 'popup__feature--wifi',
+  dishwasher: 'popup__feature--dishwasher',
+  parking: 'popup__feature--parking',
+  washer: 'popup__feature--washer',
+  elevator: 'popup__feature--elevator',
+  conditioner: 'popup__feature--conditioner',
+};
+
 var mapPins = document.querySelector('.map__pins');
 
 var pinWidth = mapPins.querySelector('img').clientWidth;
@@ -78,14 +87,14 @@ for (var i = 0; i < 8; i++) {
   });
 }
 
-var renderHotel = function (hotels, template) {
+var renderHotel = function (hotel, template, order) {
   var hotelElement = template.cloneNode(true);
   var hotelElementImg = hotelElement.querySelector('img');
 
-  hotelElement.style = 'left: ' + hotels.location.x + 'px; top: ' + hotels.location.y + 'px;';
-  hotelElementImg.src = hotels.author.avatar;
-  hotelElementImg.alt = hotels.offer.title;
-
+  hotelElement.style = 'left: ' + hotel.location.x + 'px; top: ' + hotel.location.y + 'px;';
+  hotelElementImg.src = hotel.author.avatar;
+  hotelElementImg.alt = hotel.offer.title;
+  hotelElement.setAttribute('data-order', order);
   return hotelElement;
 };
 
@@ -95,7 +104,7 @@ var pinTemplate = document.querySelector('#pin')
 
 var fragment = document.createDocumentFragment();
 for (var k = 0; k < allHotels.length; k++) {
-  var newHotel = renderHotel(allHotels[k], pinTemplate);
+  var newHotel = renderHotel(allHotels[k], pinTemplate, k);
   fragment.appendChild(newHotel);
 }
 
@@ -125,6 +134,7 @@ var getMapHotel = function (hotel, template) {
   var popupTextCapacity = hotelMapElement.querySelector('.popup__text--capacity');
   var popupTextTime = hotelMapElement.querySelector('.popup__text--time');
   var popupFeatures = hotelMapElement.querySelector('.popup__features');
+  var popupFeaturesCollection = hotelMapElement.querySelectorAll('.popup__feature');
   var popupDescription = hotelMapElement.querySelector('.popup__description');
   var popupAvatar = hotelMapElement.querySelector('.popup__avatar');
 
@@ -165,7 +175,28 @@ var getMapHotel = function (hotel, template) {
   }
 
   if (hotel.offer.features.length > 1) {
-    popupFeatures.innerHTML = hotel.offer.features;
+    // popupFeatures.innerHTML = hotel.offer.features;
+    var featuresClasses = [];
+
+    for (var g = 0; g < hotel.offer.features.length; g++) {
+      var featuresName = hotel.offer.features[g];
+
+      featuresClasses.push(featuresInHotelMatch[featuresName]);
+    }
+
+    for (var d = 0; d < popupFeaturesCollection.length; d++) {
+      var flag = false;
+
+      for (var f = 0; f < featuresClasses.length; f++) {
+        if (popupFeaturesCollection[d].classList.contains(featuresClasses[f])) {
+          flag = true;
+        }
+      }
+      if (!flag) {
+        popupFeaturesCollection[d].remove();
+      }
+    }
+
   } else {
     popupFeatures.textContent = '';
   }
@@ -349,23 +380,13 @@ var removePopupNode = function () {
 <!-- Отрисовка окна подробностей отеля -->
 var openPopup = function (evt) {
 
-
   removePopupNode();
   var myHotel;
 
-  <!-- Получаю мой отель. Ищу scr картинки у evt и через find нахожу нужный объект отеля -->
-  if (evt.target.tagName === 'IMG') {
-    var pictPath = evt.target.attributes[0].nodeValue;
-    myHotel = allHotels.find(function (item) {
-      return item.author.avatar === pictPath;
-    });
-  }
-  if (evt.target.tagName === 'BUTTON') {
-    var buttonPictPath = evt.target.childNodes[1].attributes[0].nodeValue;
-    myHotel = allHotels.find(function (item) {
-      return item.author.avatar === buttonPictPath;
-    });
-  }
+  <!-- Получаю мой отель -->
+  var buttonEl = evt.target.closest('.map__pin');
+  var buttonOrder = buttonEl.dataset.order;
+  myHotel = allHotels[buttonOrder];
 
   <!-- Отрисую подробности выбранного отеля-->
   var newMapHotel = getMapHotel(myHotel, cardTemplate);
@@ -448,15 +469,6 @@ var actualConnectedTimes = function (select1, select2, evt) {
   if (evt.target.id === 'timein') {
     select2.value = select1.value;
 
-    // Array.from(select2Values)
-    //   .forEach(function (option) {
-    //     if (option.value === select1.value) {
-    //       option.setAttribute('selected', '');
-    //     } else {
-    //       option.removeAttribute('selected');
-    //     }
-    //   });
-
     Array.from(select1Values)
       .forEach(function (option) {
         if (option.value === select1.value) {
@@ -468,15 +480,6 @@ var actualConnectedTimes = function (select1, select2, evt) {
   } else {
     <!-- Если клик на «Время выезда», то меняю выбранное значение во на «Время заезда»  -->
     select1.value = select2.value;
-
-    // Array.from(select1Values)
-    //   .forEach(function (option) {
-    //     if (option.value === select2.value) {
-    //       option.setAttribute('selected', '');
-    //     } else {
-    //       option.removeAttribute('selected');
-    //     }
-    //   });
 
     Array.from(select2Values)
       .forEach(function (option) {
