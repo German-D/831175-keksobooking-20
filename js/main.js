@@ -223,7 +223,7 @@ var getMapHotel = function (hotel, template) {
   return hotelMapElement;
 };
 
-
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Проставлю всей форме disabled
 var mapPinMain = document.querySelector('.map__pin--main');
 var mapPinMainWidth = mapPinMain.getBoundingClientRect().width;
@@ -260,7 +260,7 @@ var activatePage = function () {
   activateElements(adFormFields);
 
 
-  <!-- На все значки отелей вешаю обработчик на клик и на нажание клавиши ентер -->
+  // На все значки отелей вешаю обработчик на клик и на нажание клавиши ентер
   mapPins.appendChild(fragment);
   var mapPin = document.querySelectorAll('.map__pin');
 
@@ -358,7 +358,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 roomNumber.addEventListener('change', roomNumberChangeHandler);
 
-<!-- Обработчик на всём документе нажания Esc -->
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Обработчик на всём документе нажания Esc
 var documentKeydownHandler = function (evt) {
   if (evt.key === 'Escape') {
     removePopupNode();
@@ -366,41 +367,43 @@ var documentKeydownHandler = function (evt) {
   }
 };
 
-<!-- Функция удаления Ноды подробней отеля -->
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Функция удаления Ноды подробней отеля
 var removePopupNode = function () {
   var noda = document.querySelector('.popup');
   if (noda) {
     noda.remove();
   }
 };
-
-<!-- Отрисовка окна подробностей отеля -->
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Отрисовка окна подробностей отеля
 var openPopup = function (evt) {
 
   removePopupNode();
   var myHotel;
 
-  <!-- Получаю мой отель -->
+  // Получаю мой отель
   var buttonEl = evt.target.closest('.map__pin');
   var buttonOrder = buttonEl.dataset.order;
   myHotel = allHotels[buttonOrder];
 
-  <!-- Отрисую подробности выбранного отеля-->
+  // Отрисую подробности выбранного отеля
   var newMapHotel = getMapHotel(myHotel, cardTemplate);
   mapBlock.appendChild(newMapHotel);
 
-  <!-- Сразу-же после отрисовки ногового окна добавляю обработчик клика на крестик -->
+  // Сразу-же после отрисовки ногового окна добавляю обработчик клика на крестик
   var popupClose = document.querySelector('.popup__close');
   var popupCloseClickHandler = function () {
     removePopupNode();
   };
   popupClose.addEventListener('click', popupCloseClickHandler);
 
-  <!-- Сразу-же после отрисовки ногового окна добавлю на весь документ обработчк на Esc кот закроет подр. отеля -->
+  // Сразу-же после отрисовки ногового окна добавлю на весь документ обработчк на Esc кот закроет подр. отеля
   document.addEventListener('keydown', documentKeydownHandler);
 };
 
-<!-- Создаю два обработчика на клик и клавишу ентер по иконке отеля -->
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Создаю два обработчика на клик и клавишу ентер по иконке отеля
 var mapPinClickHandler = function (evt) {
   openPopup(evt);
 };
@@ -411,7 +414,8 @@ var mapPinKeydownHandler = function (evt) {
   }
 };
 
-<!-- Логика «Тип жилья» и «Цена за ночь» -->
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Логика «Тип жилья» и «Цена за ночь»
 var actualConnectedTypes = function (select1, select2) {
   // Значение первого селекта
   var select1Value = select1.value;
@@ -456,10 +460,11 @@ var typeChangeHandler = function () {
 };
 type.addEventListener('change', typeChangeHandler);
 
-<!-- Логика «Время заезда» и «Время выезда» -->
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Логика «Время заезда» и «Время выезда»
 var actualConnectedTimes = function (select1, select2, evt) {
 
-  <!-- Если клик на «Время заезда», то меняю выбранное значение в «Время выезда»-->
+  // Если клик на «Время заезда», то меняю выбранное значение в «Время выезда»
   var select1Values = select1.querySelectorAll('option');
   var select2Values = select2.querySelectorAll('option');
 
@@ -475,7 +480,7 @@ var actualConnectedTimes = function (select1, select2, evt) {
         }
       });
   } else {
-    <!-- Если клик на «Время выезда», то меняю выбранное значение во на «Время заезда»  -->
+    // Если клик на «Время выезда», то меняю выбранное значение во на «Время заезда»
     select1.value = select2.value;
 
     Array.from(select2Values)
@@ -496,4 +501,3 @@ var timeInChangeHandler = function (evt) {
 };
 timeIn.addEventListener('change', timeInChangeHandler);
 timeOut.addEventListener('change', timeInChangeHandler);
-
