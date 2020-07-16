@@ -175,14 +175,10 @@ var getMapHotel = function (hotel, template) {
   }
 
   if (hotel.offer.features.length > 1) {
-    // popupFeatures.innerHTML = hotel.offer.features;
-    var featuresClasses = [];
-
-    for (var g = 0; g < hotel.offer.features.length; g++) {
-      var featuresName = hotel.offer.features[g];
-
-      featuresClasses.push(featuresInHotelMatch[featuresName]);
-    }
+    var hotelFeatures = hotel.offer.features;
+    var featuresClasses = hotelFeatures.map(function (type) {
+      return featuresInHotelMatch[type];
+    });
 
     for (var d = 0; d < popupFeaturesCollection.length; d++) {
       var flag = false;
@@ -190,6 +186,7 @@ var getMapHotel = function (hotel, template) {
       for (var f = 0; f < featuresClasses.length; f++) {
         if (popupFeaturesCollection[d].classList.contains(featuresClasses[f])) {
           flag = true;
+          break;
         }
       }
       if (!flag) {
